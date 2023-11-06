@@ -70,7 +70,7 @@ namespace RestfullApiNet6M136.Implementation.Services
         public async Task<GenericResponseModel<StudentGetDTO>> GetStudentById(int Id)
         {
             //var data = await _unitOfWork.Repository.GetByIdAsync(Id);
-            //await _unitOfWork.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync();
             return null;
         }
 
