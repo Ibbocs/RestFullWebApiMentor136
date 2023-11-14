@@ -28,6 +28,7 @@ namespace RestfullApiNet6M136.Implementation.Services
             this._school = _unitOfWork.GetRepository<School>();
 
             mapper = _mapper;
+
             _unitOfWork = unitOfWork;
         }
 
