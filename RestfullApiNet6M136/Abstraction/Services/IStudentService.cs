@@ -15,9 +15,9 @@ namespace RestfullApiNet6M136.Abstraction.Services
         Task<GenericResponseModel<List<StudentGetDTO>>> GetAllStudentBySchoolId(int Id);
 
         //ChangeScholl-refactoring
-        Task<GenericResponseModel<bool>> ChangeSchool(int studentId, int schoolid);
+        Task<GenericResponseModel<bool>> ChangeSchool(int studentId, int newSchoolId);
         Task<GenericResponseModel<bool>> ChangeSchool(ChangeSchoolDTO model);
 
-        public  Task<Student> GetStudentId(int Id);
+        //public  Task<Student> GetStudentId(int Id);
     }
 }

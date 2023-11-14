@@ -39,8 +39,6 @@ namespace RestfullApiNet6M136.Implementation.Repositories
         {
             //var data = await Table.FindAsync(id);
             //return data;
-
-
             var query = Table.AsQueryable();
 
             return await query.FirstOrDefaultAsync(data => data.Id == id);

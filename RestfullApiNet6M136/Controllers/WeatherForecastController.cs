@@ -36,11 +36,11 @@ namespace RestfullApiNet6M136.Controllers
         //    .ToArray();
         //}
 
-        [HttpGet()]
-        public async Task<IActionResult> MyGet(/*[FromBody]string query*/)
-        {
-            var data =await studentService.GetStudentId(1);
-            return Ok(data);
-        }
+        //[HttpGet()]
+        //public async Task<IActionResult> MyGet(/*[FromBody]string query*/)
+        //{
+        //    var data =await studentService.GetStudentId(1);
+        //    return Ok(data);
+        //}
     }
 }

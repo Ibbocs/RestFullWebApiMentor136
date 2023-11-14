@@ -3,6 +3,6 @@
     public class ChangeSchoolDTO
     {
         public int StudentID { get; set; }
-        public int SchoolID { get; set; }
+        public int NewSchoolID { get; set; }
     }
 }
