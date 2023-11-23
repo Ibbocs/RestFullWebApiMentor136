@@ -8,7 +8,7 @@ namespace RestfullApiNet6M136.Abstraction.Services
     {
         Task<GenericResponseModel<StudentCreateDTO>> AddStudent(StudentCreateDTO model);
         Task<GenericResponseModel<bool>> DeleteStudent(int Id);
-        Task<GenericResponseModel<bool>> UpdateStudent(StudentUpdateDTO model);
+        Task<GenericResponseModel<bool>> UpdateStudent(StudentUpdateDTO model, int Id);
 
         Task<GenericResponseModel<List<StudentGetDTO>>> GetAllStudent();
         Task<GenericResponseModel<StudentGetDTO>> GetStudentById(int Id);
