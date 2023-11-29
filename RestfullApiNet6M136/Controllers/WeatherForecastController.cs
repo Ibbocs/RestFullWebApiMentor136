@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using RestfullApiNet6M136.Abstraction.IUnitOfWorks;
 using RestfullApiNet6M136.Abstraction.Services;
 using RestfullApiNet6M136.Entities.AppdbContextEntity;
+using Serilog;
+using Serilog.Context;
 
 namespace RestfullApiNet6M136.Controllers
 {
@@ -36,11 +38,22 @@ namespace RestfullApiNet6M136.Controllers
         //    .ToArray();
         //}
 
-        //[HttpGet()]
-        //public async Task<IActionResult> MyGet(/*[FromBody]string query*/)
-        //{
-        //    var data =await studentService.GetStudentId(1);
-        //    return Ok(data);
-        //}
+        [HttpGet()]
+        public async Task<IActionResult> MyGet(/*[FromBody]string query*/)
+        {
+            var log = new LoggerConfiguration();
+
+            Log.Information("salammmmm");
+            Log.Error("salammmmmError");
+            // using (LogContext.PushProperty("UserName", "Veli")) 
+            LogContext.PushProperty("UserName", "Veli");
+
+            //Log.CloseAndFlush();
+
+            _logger.LogError("bakii Loggerden");
+
+            throw new NotImplementedException();
+            //return Ok(data);
+        }
     }
 }

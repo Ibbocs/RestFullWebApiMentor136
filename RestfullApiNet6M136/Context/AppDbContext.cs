@@ -21,6 +21,8 @@ namespace RestfullApiNet6M136.Context
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+
             //modelBuilder.Entity<School>()
             //    .HasMany(sc => sc.Students)
             //    .WithOne(st => st.School)
@@ -29,7 +31,8 @@ namespace RestfullApiNet6M136.Context
             modelBuilder.Entity<Student>()
                 .HasOne<School>(st => st.School)
                 .WithMany(sc => sc.Students)
-                .HasForeignKey(st => st.SchoolId);
+                .HasForeignKey(st => st.SchoolId)
+                .OnDelete(DeleteBehavior.Cascade);
 
         }
     }
