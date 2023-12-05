@@ -1,11 +1,16 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using RestfullApiNet6M136.Abstraction.IRepositories;
 using RestfullApiNet6M136.Abstraction.IRepositories.ISchoolRepos;
 using RestfullApiNet6M136.Abstraction.IRepositories.IStudentRepos;
 using RestfullApiNet6M136.Abstraction.IUnitOfWorks;
 using RestfullApiNet6M136.Abstraction.Services;
 using RestfullApiNet6M136.Context;
+using RestfullApiNet6M136.Entities.Identity;
 using RestfullApiNet6M136.Extentions;
 using RestfullApiNet6M136.Implementation.Repositories;
 using RestfullApiNet6M136.Implementation.Repositories.EntitiesRepos;
@@ -17,7 +22,10 @@ using Serilog.Core;
 using Serilog.Events;
 using Serilog.Sinks.MSSqlServer;
 using System.Collections.ObjectModel;
+using System.Configuration;
 using System.Data;
+using System.Security.Claims;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +41,9 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Mentor136ApiDB")));
 
+//identity
+builder.Services.AddIdentity<AppUser, AppRole>().AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();
+
 //service registrartion
 builder.Services.AddScoped<ISchoolService, SchoolService>();
 builder.Services.AddScoped<IStudentService, StudentService>();
@@ -47,8 +58,73 @@ builder.Services.AddScoped<IStudentRepository, StudentRepo>();
 //builder.Services.AddScoped(typeof(IUnitOfWork<>), typeof(UnitOfWork<>));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+//AutoMapper IoC elave elemeyin 2 yolu:
 builder.Services.AddAutoMapper(typeof(MapProfile));
+//builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+
+}).AddJwtBearer("Admin", options =>
+{
+    options.TokenValidationParameters = new()
+    {
+        ValidateAudience = true,//tokunumuzu kim/hansi origin islede biler
+        ValidateIssuer = true, //tokunu kim palylayir
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true, //tokenin ozel keyi
+
+        ValidAudience = builder.Configuration["Token:Audience"],
+
+        ValidIssuer = builder.Configuration["Token:Issure"],
+
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Token:SecurityKey"])),
+
+        //tiken omru qeder islemesi ucun
+        LifetimeValidator = (notBefore, expires, securityToken, validationParameters) => expires != null ? expires > DateTime.UtcNow : false,
+
+        NameClaimType = ClaimTypes.Name,
+        RoleClaimType = ClaimTypes.Role,
+    };
+});
+
+builder.Services.AddSwaggerGen(swagger =>
+{
+    //This is to generate the Default UI of Swagger Documentation  
+    swagger.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Version = "v1",
+        Title = "Restaurant Final API",
+        Description = "ASP.NET Core 6 Web API"
+    });
+    // To Enable authorization using Swagger (JWT)  
+    swagger.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "JWT Authorization header using the Bearer scheme."
+    });
+    swagger.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                          new OpenApiSecurityScheme
+                            {
+                                Reference = new OpenApiReference
+                                {
+                                    Type = ReferenceType.SecurityScheme,
+                                    Id = "Bearer"
+                                }
+                            },
+                            new string[] {}
+
+                    }
+                });
+});
 
 Logger? log = new LoggerConfiguration()
     .WriteTo.Console(LogEventLevel.Debug)

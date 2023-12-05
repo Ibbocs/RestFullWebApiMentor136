@@ -1,9 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using RestfullApiNet6M136.Entities.AppdbContextEntity;
+using RestfullApiNet6M136.Entities.Identity;
 
 namespace RestfullApiNet6M136.Context
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext : IdentityDbContext<AppUser, AppRole, string>
     {
         public AppDbContext(DbContextOptions options) : base(options)
         {
