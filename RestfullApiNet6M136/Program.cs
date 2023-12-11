@@ -47,6 +47,7 @@ builder.Services.AddIdentity<AppUser, AppRole>().AddEntityFrameworkStores<AppDbC
 //service registrartion
 builder.Services.AddScoped<ISchoolService, SchoolService>();
 builder.Services.AddScoped<IStudentService, StudentService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 //RepositoryRegistration
 //builder.Services.AddScoped<IRepository, Repository>();
@@ -61,6 +62,8 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 //AutoMapper IoC elave elemeyin 2 yolu:
 builder.Services.AddAutoMapper(typeof(MapProfile));
 //builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+builder.Services.AddHttpContextAccessor(); //context gormek ucun http
 
 builder.Services.AddAuthentication(options =>
 {
@@ -170,7 +173,10 @@ app.ConfigureExceptionHandler(/*app.Services.GetRequiredService<ILogger<Program>
 //serilogun requestleri loglamasi ucun
 app.UseSerilogRequestLogging();
 
+
+app.UseAuthentication();
 app.UseAuthorization();
+
 
 app.MapControllers();
 

@@ -16,7 +16,7 @@ namespace RestfullApiNet6M136.Implementation.Services
         readonly UserManager<AppUser> userManager;
         readonly SignInManager<AppUser> signInManager;
         readonly ITokenHandler tokenHandler;
-        readonly IUserService UserService; //todo bunu isledib vaxtlari appsettingden verersen?
+        readonly IUserService UserService;
         readonly IHttpContextAccessor _httpContextAccessor;
 
         public AuthService(SignInManager<AppUser> _signInManager, UserManager<AppUser> _userManager, ITokenHandler _tokenHandler, IUserService _UserService2, IHttpContextAccessor httpContextAccessor)

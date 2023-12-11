@@ -26,8 +26,9 @@ namespace RestfullApiNet6M136.Implementation.Services
         //user yaratma
         public async Task<GenericResponseModel<CreateUserResponseDTO>> CreateAsync(CreateUserDto model)
         {
+            var response = new GenericResponseModel<CreateUserResponseDTO>();
 
-            var id = Guid.NewGuid().ToString();
+            var id = Guid.NewGuid().ToString(); //randomdan reqem alib da yazmaq olar ya da elle id vermeliyik.
             IdentityResult result = await userManager.CreateAsync(new()
             {
                 Id = id,
@@ -37,19 +38,16 @@ namespace RestfullApiNet6M136.Implementation.Services
                 LastName = model.LastName,
             }, model.Password);
 
+            response.Data = new CreateUserResponseDTO { Succeeded = result.Succeeded };
+            response.StatusCode = result.Succeeded ? 200 : 400;
 
-            //CreateUserResponseDTO response = new() { Succeeded = result.Succeeded };
-
-            var response = new GenericResponseModel<CreateUserResponseDTO>
-            {
-                Data = new CreateUserResponseDTO { Succeeded = result.Succeeded },
-                StatusCode = result.Succeeded ? 200 : 400
-            };
 
             if (!result.Succeeded)
             {
                 response.Data.Message = string.Join(" \n ", result.Errors.Select(error => $"{error.Code} - {error.Description}"));
             }
+
+            //burdan sorasi default olaraq rol vermekdi usere, bunu admin ile de eletdirmek olar ya da yri method icinde.
 
             AppUser user = await userManager.FindByNameAsync(model.UserName);
             if (user == null)
@@ -58,8 +56,6 @@ namespace RestfullApiNet6M136.Implementation.Services
                 await userManager.AddToRoleAsync(user, "User");
 
             return response;
-
-            //throw new UserCreateFaileedException();
         }
 
         public async Task UpdateRefreshToken(string refreshToken, AppUser user, DateTime accessTokenDate)
@@ -186,9 +182,9 @@ namespace RestfullApiNet6M136.Implementation.Services
 
         public async Task<GenericResponseModel<string[]>> GetRolesToUserAsync(string userIdOrName)
         {
-            AppUser user = await userManager.FindByIdAsync(userIdOrName);
-
             GenericResponseModel<string[]> resModel = new GenericResponseModel<string[]>() { StatusCode=400, Data=null };
+
+            AppUser user = await userManager.FindByIdAsync(userIdOrName);
 
             if (user == null)
                 user = await userManager.FindByNameAsync(userIdOrName);
@@ -221,7 +217,7 @@ namespace RestfullApiNet6M136.Implementation.Services
                 user = await userManager.FindByNameAsync(userIdOrName);
 
             if (user == null)
-                throw new ArgumentNullException(nameof(user));
+                throw new ArgumentNullException(nameof(user));//todo bilmirem isleyer bele ya yo
 
             try
             {
